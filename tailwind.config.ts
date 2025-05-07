@@ -23,7 +23,7 @@ export default {
         background: "#f8f9fa",
         foreground: "#1a1a1a",
         muted: "#64748b",
-        accent: "#00693e", // UQU primary green
+        accent: "#055a63", // UQU primary green
         secondary: "#b8860b", // UQU gold color
         bubble: {
           received: "#00693e", // Bot message bubbles in UQU green
