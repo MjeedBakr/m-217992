@@ -7,9 +7,9 @@ const Header = () => {
     <div className="header-shadow bg-white p-3 flex items-center justify-between">
       <div className="flex items-center">
         <img 
-          src="https://www.uqu.edu.sa/App_Themes/uqu/img/logo.png" 
+          src="/lovable-uploads/990c4a83-37d2-4cbe-991b-d38c886c60af.png" 
           alt="شعار جامعة أم القرى" 
-          className="h-12 w-auto ml-3"
+          className="h-14 w-auto ml-3"
         />
         <div>
           <h1 className="font-bold text-lg text-uqu-green-600">بوت المفقودات</h1>
