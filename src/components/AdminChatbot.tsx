@@ -1,10 +1,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { Avatar } from "@/components/ui/avatar";
-import { toast } from "@/components/ui/use-toast";
-import { Bot, User, FileText } from "lucide-react";
-import { useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
+import { Bot, User } from "lucide-react";
 
 interface Message {
   id: string;
@@ -13,44 +10,43 @@ interface Message {
   timestamp: string;
 }
 
-interface LostItem {
+interface FoundItem {
   id: string;
   name: string;
   description: string;
   location: string;
   date: string;
-  contactInfo: string;
-  status: "pending" | "found" | "closed";
+  status: "available" | "claimed";
   createdAt: string;
 }
 
-// Bot questions flow for lost item reporting
-const reportFlow = [
-  "ما هو اسم العنصر المفقود؟",
-  "أين فقدت هذا العنصر؟ (المبنى، القاعة، إلخ)",
-  "متى فقدت هذا العنصر؟ (التاريخ التقريبي)",
-  "هل يمكنك إعطاء وصف مفصل للعنصر المفقود؟ (اللون، الشكل، أي علامات مميزة)",
-  "كيف يمكننا التواصل معك؟ (الرجاء تقديم رقم الهاتف أو البريد الإلكتروني)"
+interface AdminChatbotProps {
+  onItemAdded: (item: FoundItem) => void;
+}
+
+const foundFlow = [
+  "ما هو اسم العنصر الذي تم العثور عليه؟",
+  "أين تم العثور على هذا العنصر؟ (المبنى، القاعة، إلخ)",
+  "متى تم العثور على هذا العنصر؟ (التاريخ التقريبي)",
+  "هل يمكنك إعطاء وصف مفصل للعنصر؟ (اللون، الشكل، أي علامات مميزة)"
 ];
 
 const initialMessages: Message[] = [
   { 
     id: "1", 
-    content: "مرحبا بك في بوت المفقودات بجامعة أم القرى! لتقديم بلاغ عن مفقودات، الرجاء وصف العنصر المفقود بشكل مختصر.", 
+    content: "مرحبا بك في بوت إدخال الموجودات! الرجاء وصف العنصر الذي تم العثور عليه.", 
     sender: "bot", 
     timestamp: "09:00" 
   },
 ];
 
-export const ChatMessages = () => {
+const AdminChatbot: React.FC<AdminChatbotProps> = ({ onItemAdded }) => {
   const [messages, setMessages] = useState<Message[]>(initialMessages);
   const [newMessage, setNewMessage] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const [reportingStep, setReportingStep] = useState(-1);
-  const [lostItemData, setLostItemData] = useState<Partial<LostItem>>({});
-  const [isReportComplete, setIsReportComplete] = useState(false);
+  const [foundItemData, setFoundItemData] = useState<Partial<FoundItem>>({});
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const navigate = useNavigate();
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -67,7 +63,7 @@ export const ChatMessages = () => {
     setTimeout(() => {
       const botMsg: Message = {
         id: Date.now().toString() + "-bot",
-        content: reportFlow[0],
+        content: foundFlow[0],
         sender: "bot",
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
       };
@@ -78,31 +74,28 @@ export const ChatMessages = () => {
   };
 
   const processUserResponse = (userResponse: string, currentStep: number) => {
-    const updatedLostItem = { ...lostItemData };
+    const updatedFoundItem = { ...foundItemData };
     
     // Process user response based on the current step
     switch (currentStep) {
       case 0:
-        updatedLostItem.name = userResponse;
+        updatedFoundItem.name = userResponse;
         break;
       case 1:
-        updatedLostItem.location = userResponse;
+        updatedFoundItem.location = userResponse;
         break;
       case 2:
-        updatedLostItem.date = userResponse;
+        updatedFoundItem.date = userResponse;
         break;
       case 3:
-        updatedLostItem.description = userResponse;
-        break;
-      case 4:
-        updatedLostItem.contactInfo = userResponse;
+        updatedFoundItem.description = userResponse;
         break;
     }
     
-    setLostItemData(updatedLostItem);
+    setFoundItemData(updatedFoundItem);
     
     // Move to the next step or complete the report
-    if (currentStep < reportFlow.length - 1) {
+    if (currentStep < foundFlow.length - 1) {
       const nextStep = currentStep + 1;
       setReportingStep(nextStep);
       setIsTyping(true);
@@ -110,7 +103,7 @@ export const ChatMessages = () => {
       setTimeout(() => {
         const botMsg: Message = {
           id: Date.now().toString() + "-bot",
-          content: reportFlow[nextStep],
+          content: foundFlow[nextStep],
           sender: "bot",
           timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
         };
@@ -119,44 +112,36 @@ export const ChatMessages = () => {
         setIsTyping(false);
       }, 1000);
     } else {
-      // Reporting is complete, generate summary
-      completeReport(updatedLostItem);
+      // Reporting is complete, generate summary and add item
+      completeReport(updatedFoundItem);
     }
   };
 
-  const completeReport = (reportData: Partial<LostItem>) => {
+  const completeReport = (reportData: Partial<FoundItem>) => {
     setIsTyping(true);
     
     setTimeout(() => {
-      // Create a complete lost item object
-      const completeLostItem: LostItem = {
+      // Create a complete found item object
+      const completeFoundItem: FoundItem = {
         id: Date.now().toString(),
         name: reportData.name || "",
         description: reportData.description || "",
         location: reportData.location || "",
         date: reportData.date || "",
-        contactInfo: reportData.contactInfo || "",
-        status: "pending",
+        status: "available",
         createdAt: new Date().toISOString(),
       };
       
-      // Store in localStorage (simulating a database)
-      const existingItems = JSON.parse(localStorage.getItem("lostItems") || "[]");
-      localStorage.setItem("lostItems", JSON.stringify([...existingItems, completeLostItem]));
-      
       // Generate summary message
       const summaryMsg = `
-        **تم استلام طلبك بنجاح! ملخص البيانات:**
+        **تم إدخال العنصر بنجاح! ملخص البيانات:**
         
-        **العنصر المفقود:** ${completeLostItem.name}
-        **الوصف:** ${completeLostItem.description}
-        **المكان:** ${completeLostItem.location}
-        **التاريخ:** ${completeLostItem.date}
-        **معلومات الاتصال:** ${completeLostItem.contactInfo}
+        **العنصر:** ${completeFoundItem.name}
+        **الوصف:** ${completeFoundItem.description}
+        **المكان:** ${completeFoundItem.location}
+        **التاريخ:** ${completeFoundItem.date}
         
-        **رقم البلاغ:** #${completeLostItem.id.slice(0, 8)}
-        
-        سيتم مراجعة طلبك من قبل المسؤول، وسيتم التواصل معك في حال العثور على العنصر المفقود.
+        تم إضافة العنصر إلى قائمة الموجودات.
       `;
       
       const botMsg: Message = {
@@ -168,14 +153,23 @@ export const ChatMessages = () => {
 
       setMessages(prev => [...prev, botMsg]);
       setIsTyping(false);
-      setIsReportComplete(true);
       
-      // Notify the user
-      toast({
-        title: "تم تقديم البلاغ بنجاح",
-        description: `رقم البلاغ: #${completeLostItem.id.slice(0, 8)}`,
-        duration: 5000,
-      });
+      // Call the callback to add the item to the parent component
+      onItemAdded(completeFoundItem);
+      
+      // Reset for the next item
+      setTimeout(() => {
+        const resetMsg: Message = {
+          id: Date.now().toString() + "-bot",
+          content: "هل تريد إضافة عنصر آخر تم العثور عليه؟",
+          sender: "bot",
+          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        };
+        
+        setMessages(prev => [...prev, resetMsg]);
+        setReportingStep(-1);
+        setFoundItemData({});
+      }, 2000);
     }, 1500);
   };
 
@@ -193,23 +187,23 @@ export const ChatMessages = () => {
     setMessages([...messages, userMsg]);
     setNewMessage("");
 
-    // If reporting flow hasn't started yet, check if user wants to report an item
+    // If reporting flow hasn't started yet, start it
     if (reportingStep === -1) {
       startReportingFlow();
     } 
     // If already in reporting flow, process the user's response
-    else if (reportingStep >= 0 && reportingStep < reportFlow.length) {
+    else if (reportingStep >= 0 && reportingStep < foundFlow.length) {
       processUserResponse(newMessage, reportingStep);
     }
   };
 
-  const goToAdmin = () => {
-    navigate('/admin');
-  };
-
   return (
-    <div className="flex-1 flex flex-col h-full">
-      <div className="flex-1 overflow-y-auto p-4 space-y-4 scrollbar-hide">
+    <div className="flex-1 flex flex-col h-[600px] border rounded-lg overflow-hidden">
+      <div className="bg-uqu-green-600 text-white py-3 px-4 text-center">
+        <h2 className="text-lg font-bold">بوت إدخال الموجودات</h2>
+      </div>
+      
+      <div className="flex-1 overflow-y-auto p-4 space-y-4 scrollbar-hide bg-gray-50">
         {messages.map((message) => (
           <div key={message.id} className={`flex items-start gap-2 mb-4 ${message.sender === "user" ? "flex-row-reverse" : ""}`}>
             <Avatar className={`w-8 h-8 mt-1 ${message.sender === "bot" ? "bg-uqu-green-600" : "bg-gray-200"}`}>
@@ -245,18 +239,6 @@ export const ChatMessages = () => {
           </div>
         )}
         
-        {isReportComplete && (
-          <div className="flex justify-center mt-4">
-            <Button 
-              onClick={goToAdmin}
-              className="bg-uqu-green-600 text-white hover:bg-uqu-green-700"
-            >
-              <FileText className="w-5 h-5 mr-2" />
-              الانتقال إلى صفحة الإدارة
-            </Button>
-          </div>
-        )}
-        
         <div ref={messagesEndRef} />
       </div>
 
@@ -285,4 +267,4 @@ export const ChatMessages = () => {
   );
 };
 
-export default ChatMessages;
+export default AdminChatbot;
