@@ -1,4 +1,3 @@
-
 import type { Config } from "tailwindcss";
 
 export default {
@@ -23,10 +22,10 @@ export default {
         background: "#f8f9fa",
         foreground: "#1a1a1a",
         muted: "#64748b",
-        accent: "#055a63", // UQU primary green
+        accent: "#055a63", // Updated green
         secondary: "#b8860b", // UQU gold color
         bubble: {
-          received: "#00693e", // Bot message bubbles in UQU green
+          received: "#055a63", // Updated bot message bubble
           sent: "#e2e8f0", // User message bubbles in light gray
         },
         border: "#e2e8f0",
@@ -36,10 +35,10 @@ export default {
           300: "#9fc8b5",
           400: "#7cb49b",
           500: "#58a080",
-          600: "#00693e", // Primary
-          700: "#005432",
-          800: "#004025",
-          900: "#002b19",
+          600: "#055a63", // Updated primary
+          700: "#04484f", // Adjusted darker tone (optional)
+          800: "#03363b", // Adjusted darker tone (optional)
+          900: "#022427", // Adjusted darkest tone (optional)
         },
         "uqu-gold": {
           100: "#fdf6e3",
