@@ -2,6 +2,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Avatar } from "@/components/ui/avatar";
 import { toast } from "@/components/ui/use-toast";
+import { Bot, User } from "lucide-react";
 
 interface Message {
   id: string;
@@ -82,15 +83,12 @@ export const ChatMessages = () => {
       <div className="flex-1 overflow-y-auto p-4 space-y-4 scrollbar-hide">
         {messages.map((message) => (
           <div key={message.id} className={`flex items-start gap-2 mb-4 ${message.sender === "user" ? "flex-row-reverse" : ""}`}>
-            <Avatar className="w-8 h-8 mt-1">
-              <img 
-                src={message.sender === "user" 
-                  ? "https://images.unsplash.com/photo-1649972904349-6e44c42644a7"
-                  : "https://www.uqu.edu.sa/App_Themes/uqu/img/logo.png"
-                } 
-                alt={message.sender === "user" ? "المستخدم" : "بوت المفقودات"} 
-                className="object-cover"
-              />
+            <Avatar className={`w-8 h-8 mt-1 ${message.sender === "bot" ? "bg-uqu-green-600" : "bg-gray-200"}`}>
+              {message.sender === "user" ? (
+                <User className="h-5 w-5 text-gray-500" />
+              ) : (
+                <Bot className="h-5 w-5 text-white" />
+              )}
             </Avatar>
             <div className="flex flex-col gap-1 max-w-[75%]">
               <div className={`message-bubble ${message.sender === "user" ? "sent" : "received"}`}>
@@ -105,12 +103,8 @@ export const ChatMessages = () => {
         
         {isTyping && (
           <div className="flex items-start gap-2 mb-4">
-            <Avatar className="w-8 h-8 mt-1">
-              <img 
-                src="https://www.uqu.edu.sa/App_Themes/uqu/img/logo.png"
-                alt="بوت المفقودات" 
-                className="object-cover"
-              />
+            <Avatar className="w-8 h-8 mt-1 bg-uqu-green-600">
+              <Bot className="h-5 w-5 text-white" />
             </Avatar>
             <div className="message-bubble received">
               <div className="typing">
