@@ -1,29 +1,41 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
+  html {
+    direction: rtl;
+  }
+  
   body {
     @apply bg-background text-foreground antialiased;
+    font-family: 'Amiri', serif;
   }
 }
 
-@layer utilities {
-  .glass {
-    @apply bg-opacity-20 backdrop-blur-sm border border-white/10;
+@layer components {
+  .uqu-container {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
   }
-}
 
-.message-bubble {
-  @apply rounded-2xl px-4 py-2 max-w-[80%] break-words;
-}
+  .message-bubble {
+    @apply rounded-2xl px-4 py-2 max-w-[80%] break-words;
+  }
 
-.message-bubble.sent {
-  @apply bg-bubble-sent text-white ml-auto;
-}
+  .message-bubble.sent {
+    @apply bg-bubble-sent text-foreground ml-auto;
+  }
 
-.message-bubble.received {
-  @apply bg-bubble-received text-white;
+  .message-bubble.received {
+    @apply bg-bubble-received text-white;
+  }
+
+  .header-shadow {
+    @apply shadow-sm border-b border-border;
+  }
 }
 
 .scrollbar-hide::-webkit-scrollbar {
@@ -33,4 +45,45 @@
 .scrollbar-hide {
   -ms-overflow-style: none;
   scrollbar-width: none;
+}
+
+/* Bot typing animation */
+.typing {
+  display: inline-flex;
+  align-items: center;
+  height: 20px;
+}
+
+.typing .dot {
+  @apply bg-white;
+  display: block;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  opacity: 0.5;
+  animation: loadingFade 1s infinite;
+}
+
+.typing .dot:nth-child(1) {
+  animation-delay: 0s;
+}
+
+.typing .dot:nth-child(2) {
+  animation-delay: 0.2s;
+  margin: 0 4px;
+}
+
+.typing .dot:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes loadingFade {
+  0%, 100% {
+    opacity: 0.3;
+    transform: scale(0.8);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.2);
+  }
 }
