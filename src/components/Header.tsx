@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { Avatar } from "@/components/ui/avatar";
+import { User } from "lucide-react";
 
 const Header = () => {
   return (
@@ -16,12 +17,8 @@ const Header = () => {
           <p className="text-xs text-muted">جامعة أم القرى</p>
         </div>
       </div>
-      <Avatar className="w-10 h-10">
-        <img 
-          src="https://images.unsplash.com/photo-1649972904349-6e44c42644a7" 
-          alt="المستخدم" 
-          className="object-cover"
-        />
+      <Avatar className="w-10 h-10 bg-gray-200">
+        <User className="h-6 w-6 text-gray-500" />
       </Avatar>
     </div>
   );

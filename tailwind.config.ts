@@ -55,6 +55,7 @@ export default {
       },
       fontFamily: {
         sans: [
+          "Tajawal",
           "system-ui",
           "-apple-system",
           "BlinkMacSystemFont",
@@ -62,7 +63,7 @@ export default {
           "Roboto",
           "sans-serif",
         ],
-        arabic: ["Amiri", "serif"],
+        arabic: ["Tajawal", "sans-serif"],
       },
       boxShadow: {
         soft: "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)",
