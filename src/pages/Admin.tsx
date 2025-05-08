@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
@@ -69,13 +68,43 @@ const Admin = () => {
   const findMatches = (lostItem: LostItem) => {
     setSelectedLostItem(lostItem);
     
-    // Simple matching algorithm based on name and description similarity
-    const matches = foundItems.filter(foundItem => 
-      foundItem.name.toLowerCase().includes(lostItem.name.toLowerCase()) || 
-      lostItem.name.toLowerCase().includes(foundItem.name.toLowerCase()) ||
-      foundItem.description.toLowerCase().includes(lostItem.description.toLowerCase()) ||
-      lostItem.description.toLowerCase().includes(foundItem.description.toLowerCase())
-    );
+    // Enhanced matching algorithm based on keywords and partial matches
+    const matches = foundItems.filter(foundItem => {
+      // Split descriptions and names into keywords
+      const lostKeywords = [
+        ...lostItem.name.toLowerCase().split(/\s+/),
+        ...lostItem.description.toLowerCase().split(/\s+/)
+      ].filter(word => word.length > 2); // Filter out very short words
+      
+      const foundKeywords = [
+        ...foundItem.name.toLowerCase().split(/\s+/),
+        ...foundItem.description.toLowerCase().split(/\s+/)
+      ].filter(word => word.length > 2);
+      
+      // Calculate keyword match score (how many words match)
+      let matchScore = 0;
+      lostKeywords.forEach(lostWord => {
+        foundKeywords.forEach(foundWord => {
+          // Check for partial matches
+          if (lostWord.includes(foundWord) || foundWord.includes(lostWord)) {
+            matchScore++;
+          }
+        });
+      });
+      
+      // Also check category/type match (e.g., wallet, phone, etc.)
+      const hasTypeMatch = 
+        lostItem.name.toLowerCase().includes(foundItem.name.toLowerCase()) || 
+        foundItem.name.toLowerCase().includes(lostItem.name.toLowerCase());
+      
+      // Check location similarity
+      const locationMatch = 
+        lostItem.location.toLowerCase().includes(foundItem.location.toLowerCase()) || 
+        foundItem.location.toLowerCase().includes(lostItem.location.toLowerCase());
+      
+      // Return true if there's a reasonable match (using a threshold)
+      return (matchScore >= 1) || hasTypeMatch || locationMatch;
+    });
     
     if (matches.length > 0) {
       toast({

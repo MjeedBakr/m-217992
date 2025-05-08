@@ -1,6 +1,5 @@
-
 import React, { useState, useEffect, useRef } from 'react';
-import { Avatar } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { toast } from "@/components/ui/use-toast";
 import { Bot, User, FileText } from "lucide-react";
 import { useNavigate } from "react-router-dom";
@@ -193,7 +192,7 @@ export const ChatMessages = () => {
     setMessages([...messages, userMsg]);
     setNewMessage("");
 
-    // If reporting flow hasn't started yet, check if user wants to report an item
+    // Start reporting flow immediately or continue if already in progress
     if (reportingStep === -1) {
       startReportingFlow();
     } 
@@ -211,13 +210,15 @@ export const ChatMessages = () => {
     <div className="flex-1 flex flex-col h-full">
       <div className="flex-1 overflow-y-auto p-4 space-y-4 scrollbar-hide">
         {messages.map((message) => (
-          <div key={message.id} className={`flex items-start gap-2 mb-4 ${message.sender === "user" ? "flex-row-reverse" : ""}`}>
-            <Avatar className={`w-8 h-8 mt-1 ${message.sender === "bot" ? "bg-uqu-green-600" : "bg-gray-200"}`}>
-              {message.sender === "user" ? (
-                <User className="h-5 w-5 text-gray-500" />
-              ) : (
-                <Bot className="h-5 w-5 text-white" />
-              )}
+          <div key={message.id} className={`flex items-start gap-3 mb-4 ${message.sender === "user" ? "flex-row-reverse" : ""}`}>
+            <Avatar className={`${message.sender === "bot" ? "bg-uqu-green-600" : "bg-gray-200"} flex items-center justify-center`}>
+              <AvatarFallback>
+                {message.sender === "user" ? (
+                  <User className="h-5 w-5 text-gray-500" />
+                ) : (
+                  <Bot className="h-5 w-5 text-white" />
+                )}
+              </AvatarFallback>
             </Avatar>
             <div className="flex flex-col gap-1 max-w-[75%]">
               <div className={`message-bubble ${message.sender === "user" ? "sent" : "received"}`}>
@@ -231,9 +232,11 @@ export const ChatMessages = () => {
         ))}
         
         {isTyping && (
-          <div className="flex items-start gap-2 mb-4">
-            <Avatar className="w-8 h-8 mt-1 bg-uqu-green-600">
-              <Bot className="h-5 w-5 text-white" />
+          <div className="flex items-start gap-3 mb-4">
+            <Avatar className="bg-uqu-green-600 flex items-center justify-center">
+              <AvatarFallback>
+                <Bot className="h-5 w-5 text-white" />
+              </AvatarFallback>
             </Avatar>
             <div className="message-bubble received">
               <div className="typing">
@@ -251,7 +254,7 @@ export const ChatMessages = () => {
               onClick={goToAdmin}
               className="bg-uqu-green-600 text-white hover:bg-uqu-green-700"
             >
-              <FileText className="w-5 h-5 mr-2" />
+              <FileText className="w-5 h-5 ml-2" />
               الانتقال إلى صفحة الإدارة
             </Button>
           </div>
