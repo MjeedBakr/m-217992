@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from 'react';
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { toast } from "@/components/ui/use-toast";
@@ -268,10 +269,11 @@ export const ChatMessages = () => {
           <input
             type="text"
             placeholder="اكتب رسالتك هنا..."
-            className="flex-1 bg-transparent outline-none px-2 text-right"
+            className="flex-1 bg-transparent outline-none px-2 text-right dir-rtl"
             value={newMessage}
             onChange={(e) => setNewMessage(e.target.value)}
             dir="rtl"
+            style={{ direction: "rtl", textAlign: "right" }}
           />
           <button 
             type="submit"
