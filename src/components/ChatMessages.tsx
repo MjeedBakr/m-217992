@@ -5,6 +5,7 @@ import { toast } from "@/components/ui/use-toast";
 import { Bot, User, FileText } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
 
 interface Message {
   id: string;
@@ -266,14 +267,26 @@ export const ChatMessages = () => {
 
       <form onSubmit={handleSendMessage} className="p-4 border-t border-border bg-white">
         <div className="flex items-center gap-2 bg-background rounded-full p-2 shadow-soft">
-          <input
-            type="text"
+          <Textarea
             placeholder="اكتب رسالتك هنا..."
-            className="flex-1 bg-transparent outline-none px-2 text-right dir-rtl"
+            className="flex-1 bg-transparent outline-none px-2 resize-none overflow-hidden p-0 min-h-0 h-10 text-right border-none"
             value={newMessage}
             onChange={(e) => setNewMessage(e.target.value)}
             dir="rtl"
-            style={{ direction: "rtl", textAlign: "right" }}
+            rows={1}
+            style={{
+              direction: "rtl",
+              textAlign: "right",
+              lineHeight: "2.5rem"
+            }}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                if (newMessage.trim()) {
+                  handleSendMessage(e);
+                }
+              }
+            }}
           />
           <button 
             type="submit"
